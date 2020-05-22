@@ -1,0 +1,13 @@
+[package]
+name = "cube2rust"
+version = "0.0.0"
+authors = ["Dimi"]
+edition = "2018"
+
+
+[dependencies]
+regex = "1.3.7"
+fstrings = "0.2.3"
+anyhow = "1.0.31"
+human-sort = "0.2.2"
+phf = { version = "0.8.0", features = ["macros"] }
