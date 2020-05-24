@@ -10,6 +10,7 @@ mod generate;
 mod gpio;
 mod rcc;
 mod spi;
+mod usart;
 
 use std::collections::HashMap;
 use std::fs;
@@ -21,6 +22,7 @@ use anyhow::{anyhow, bail, ensure, Context};
 use crate::gpio::GpioPin;
 use crate::rcc::RCC;
 use crate::spi::SPI;
+use crate::usart::USART;
 use crate::utils::*;
 use std::fs::OpenOptions;
 use std::process::Command;
@@ -36,6 +38,7 @@ pub struct Config {
     pub gpios: Vec<GpioPin>,
     pub ports: Vec<char>,
     pub spis: Vec<SPI>,
+    pub usarts: Vec<USART>,
 }
 
 pub fn load_ioc(file_content: &str) -> anyhow::Result<Config> {
@@ -66,6 +69,8 @@ pub fn load_ioc(file_content: &str) -> anyhow::Result<Config> {
 
     let spis = spi::get_spis(&config_params).context("Parsing of SPIs")?;
 
+    let usarts = usart::get_usarts(&config_params).context("Parsing of USARTs")?;
+
     Ok(Config {
         version,
         mcu_family,
@@ -74,6 +79,7 @@ pub fn load_ioc(file_content: &str) -> anyhow::Result<Config> {
         gpios,
         ports,
         spis,
+        usarts,
     })
 }
 

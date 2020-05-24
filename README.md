@@ -24,4 +24,4 @@ $ cube2rust path/to/project_directory
 
 ### Currently supported
 * Only STM32F0
-* GPIO, RCC and SPI
+* GPIO, RCC, SPI, USART

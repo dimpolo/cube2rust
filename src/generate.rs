@@ -2,6 +2,7 @@ use crate::db::*;
 use crate::gpio::*;
 use crate::rcc::*;
 use crate::spi::*;
+use crate::usart::*;
 use crate::utils::*;
 use crate::{Config, MCUFamily};
 
@@ -39,6 +40,10 @@ pub fn generate_main(config: &Config) -> anyhow::Result<String> {
 
     for spi in config.spis.iter() {
         add_spi(&mut main_func, &mut imports, spi);
+    }
+
+    for usart in config.usarts.iter() {
+        add_usart(&mut main_func, &mut imports, usart);
     }
 
     main_func.line("loop {}");
@@ -177,6 +182,24 @@ fn add_spi(main_func: &mut GeneratedString, imports: &mut GeneratedString, spi: 
     main_func.indent_left();
     main_func.line("},");
     main_func.line(f!("{spi.baudrate.0}.hz(),"));
+    main_func.line("&mut rcc");
+    main_func.indent_left();
+    main_func.line(");");
+    main_func.empty_line();
+}
+
+fn add_usart(main_func: &mut GeneratedString, imports: &mut GeneratedString, usart: &USART) {
+    let baudrate = usart.baudrate.unwrap_or(38400);
+
+    imports.line("use hal::serial::Serial;");
+
+    main_func.line(f!(
+        "let mut {usart.name_lower} = Serial::{usart.name_lower}("
+    ));
+    main_func.indent_right();
+    main_func.line(f!("p.{usart.name_upper},"));
+    main_func.line(f!("({usart.name_lower}_tx, {usart.name_lower}_rx),"));
+    main_func.line(f!("{baudrate}.bps(),"));
     main_func.line("&mut rcc");
     main_func.indent_left();
     main_func.line(");");

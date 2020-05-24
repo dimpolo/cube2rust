@@ -21,7 +21,7 @@ pub fn get_spis(config: &ConfigParams<'_>) -> anyhow::Result<Vec<SPI>> {
         let name_upper = name_lower.to_ascii_uppercase();
 
         // search config for SPI1, SPI2, etc..
-        if let Some(spi_params) = config.get(&name_upper[..]) {
+        if let Some(spi_params) = config.get::<str>(&name_upper) {
             let prescaler = parse_mandatory_param(spi_params, "BaudRatePrescaler")?;
             let baudrate = parse_mandatory_param(spi_params, "CalculateBaudRate")?;
             let phase = parse_optional_param(spi_params, "CLKPhase")?;
