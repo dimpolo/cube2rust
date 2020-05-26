@@ -8,6 +8,7 @@ mod utils;
 mod db;
 mod generate;
 mod gpio;
+mod i2c;
 mod rcc;
 mod spi;
 mod usart;
@@ -20,6 +21,7 @@ use std::path::Path;
 use anyhow::{anyhow, bail, ensure, Context};
 
 use crate::gpio::GpioPin;
+use crate::i2c::I2C;
 use crate::rcc::RCC;
 use crate::spi::SPI;
 use crate::usart::USART;
@@ -39,6 +41,7 @@ pub struct Config {
     pub ports: Vec<char>,
     pub spis: Vec<SPI>,
     pub usarts: Vec<USART>,
+    pub i2cs: Vec<I2C>,
 }
 
 pub fn load_ioc(file_content: &str) -> anyhow::Result<Config> {
@@ -71,6 +74,8 @@ pub fn load_ioc(file_content: &str) -> anyhow::Result<Config> {
 
     let usarts = usart::get_usarts(&config_params).context("Parsing of USARTs")?;
 
+    let i2cs = i2c::get_i2cs(&config_params).context("Parsing of I2Cs")?;
+
     Ok(Config {
         version,
         mcu_family,
@@ -80,6 +85,7 @@ pub fn load_ioc(file_content: &str) -> anyhow::Result<Config> {
         ports,
         spis,
         usarts,
+        i2cs,
     })
 }
 

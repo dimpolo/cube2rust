@@ -1,5 +1,6 @@
 use crate::db::*;
 use crate::gpio::*;
+use crate::i2c::*;
 use crate::rcc::*;
 use crate::spi::*;
 use crate::usart::*;
@@ -44,6 +45,10 @@ pub fn generate_main(config: &Config) -> anyhow::Result<String> {
 
     for usart in config.usarts.iter() {
         add_usart(&mut main_func, &mut imports, usart);
+    }
+
+    for i2c in config.i2cs.iter() {
+        add_i2c(&mut main_func, &mut imports, i2c);
     }
 
     main_func.line("loop {}");
@@ -200,6 +205,26 @@ fn add_usart(main_func: &mut GeneratedString, imports: &mut GeneratedString, usa
     main_func.line(f!("p.{usart.name_upper},"));
     main_func.line(f!("({usart.name_lower}_tx, {usart.name_lower}_rx),"));
     main_func.line(f!("{baudrate}.bps(),"));
+    main_func.line("&mut rcc");
+    main_func.indent_left();
+    main_func.line(");");
+    main_func.empty_line();
+}
+
+fn add_i2c(main_func: &mut GeneratedString, imports: &mut GeneratedString, i2c: &I2C) {
+    imports.line("use hal::i2c::I2c;");
+
+    let speed: u32 = match i2c.mode.unwrap_or_default() {
+        Mode::I2C_Standard => 100,
+        Mode::I2C_Fast => 400,
+        Mode::I2C_Fast_Plus => 1000,
+    };
+
+    main_func.line(f!("let mut {i2c.name_lower} = I2c::{i2c.name_lower}("));
+    main_func.indent_right();
+    main_func.line(f!("p.{i2c.name_upper},"));
+    main_func.line(f!("({i2c.name_lower}_scl, {i2c.name_lower}_sda),"));
+    main_func.line(f!("{speed}.khz(),"));
     main_func.line("&mut rcc");
     main_func.indent_left();
     main_func.line(");");
