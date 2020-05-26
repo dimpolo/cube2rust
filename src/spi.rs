@@ -17,7 +17,7 @@ pub fn get_spis(config: &ConfigParams<'_>) -> anyhow::Result<Vec<SPI>> {
     let mut spis = Vec::new();
 
     for i in 1..=MAX_SPIS {
-        let name_lower: String = f!("spi{i}");
+        let name_lower = f!("spi{i}");
         let name_upper = name_lower.to_ascii_uppercase();
 
         // search config for SPI1, SPI2, etc..
@@ -75,6 +75,7 @@ parameter!(
     [SPI_PHASE_1EDGE, SPI_PHASE_2EDGE],
     default = SPI_PHASE_1EDGE
 );
+
 parameter!(
     CLKPolarity,
     [SPI_POLARITY_LOW, SPI_POLARITY_HIGH],

@@ -4,6 +4,18 @@ use regex::Regex;
 
 use crate::*;
 
+#[derive(Debug)]
+pub struct GpioPin {
+    pub port: String,
+    pub register: String,
+    pub signal: SignalType,
+    pub label: Option<String>,
+    pub pin_state: Option<PinStateType>,
+    pub speed: Option<SpeedType>,
+    pub pu_pd: Option<PullType>,
+    pub mode_default_output_pp: Option<ModeOutputType>,
+}
+
 pub fn get_gpios(config: &ConfigParams<'_>) -> anyhow::Result<(Vec<char>, Vec<GpioPin>)> {
     // regex matches PA11, PB4, etc
     let re = Regex::new(r"^P[A-K]\d{1,2}").unwrap();
@@ -39,18 +51,6 @@ pub fn get_gpios(config: &ConfigParams<'_>) -> anyhow::Result<(Vec<char>, Vec<Gp
     ports.dedup();
 
     Ok((ports, gpios))
-}
-
-#[derive(Debug)]
-pub struct GpioPin {
-    pub port: String,
-    pub register: String,
-    pub signal: SignalType,
-    pub label: Option<String>,
-    pub pin_state: Option<PinStateType>,
-    pub speed: Option<SpeedType>,
-    pub pu_pd: Option<PullType>,
-    pub mode_default_output_pp: Option<ModeOutputType>,
 }
 
 impl GpioPin {
