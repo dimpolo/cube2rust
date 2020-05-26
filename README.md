@@ -1,6 +1,8 @@
 # cube2rust
 A tool for generating a rust project from a STM32CubeMX ioc file.
 
+![demo](demo.png)
+
 The tool will run `cargo init` in the same directory as the ioc file.
 
 It will then add dependencies to `Cargo.toml` and generate a `src/main.rs`, `.cargo/config` and `memory.x`.
