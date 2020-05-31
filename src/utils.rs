@@ -25,7 +25,7 @@ where
 {
     let &param = parameters
         .get(param_name)
-        .ok_or_else(|| anyhow!("{} required", param_name))?;
+        .ok_or_else(|| anyhow!("{} parameter required", param_name))?;
     T::try_from(param)
 }
 
@@ -35,9 +35,9 @@ pub fn parse_mandatory_u32(
 ) -> anyhow::Result<u32> {
     Ok(parameters
         .get(param_name)
-        .ok_or_else(|| anyhow!(f!("{param_name} not found")))?
+        .ok_or_else(|| anyhow!(f!("{param_name} parameter not found")))?
         .parse()
-        .map_err(|_| anyhow!(f!("{param_name} invalid integer")))?)
+        .map_err(|_| anyhow!(f!("{param_name} parameter invalid integer")))?)
 }
 
 pub fn parse_optional_u32(
@@ -48,7 +48,7 @@ pub fn parse_optional_u32(
         .get(param_name)
         .map(|s| {
             s.parse()
-                .map_err(|_| anyhow!(f!("{param_name} invalid integer")))
+                .map_err(|_| anyhow!(f!("{param_name} parameter invalid integer")))
         })
         .transpose()
 }

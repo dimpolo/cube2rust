@@ -1,5 +1,5 @@
 use std::path::{Path, PathBuf};
-use std::{env, fs};
+use std::{env, fs, panic, process};
 
 use anyhow::anyhow;
 
@@ -25,18 +25,29 @@ fn get_path_to_ioc_file(dir: &Path) -> anyhow::Result<PathBuf> {
     path_to_ioc_file.ok_or_else(|| anyhow!("No .ioc file fond"))
 }
 
-fn main() -> anyhow::Result<()> {
+fn run() -> anyhow::Result<()> {
     let args: Vec<String> = env::args().collect();
     let default_path = String::new();
     let project_dir = Path::new(args.get(1).unwrap_or(&default_path));
 
     let path_to_ioc_file: PathBuf = get_path_to_ioc_file(project_dir)?;
-    
+
     println!("Found ioc file {:?}", path_to_ioc_file.file_name().unwrap());
     let filecontent = fs::read_to_string(path_to_ioc_file)?;
-    
+
     let config = cube2rust::load_ioc(&filecontent)?;
     println!("Loaded ioc file");
 
     cube2rust::generate(project_dir, config)
+}
+
+fn main() -> anyhow::Result<()> {
+    panic::catch_unwind(run).unwrap_or_else(|_| {
+        println!(
+            "
+Something went wrong or is not implemented yet.
+Please submit an issue: https://github.com/dimpolo/cube2rust"
+        );
+        process::exit(1);
+    })
 }
