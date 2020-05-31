@@ -1,4 +1,5 @@
 use crate::*;
+use regex::Regex;
 
 pub fn get_alternate_function(
     mcu_family: MCUFamily,
@@ -37,5 +38,27 @@ pub fn get_mem_size(config: &Config) -> &MemSize {
         .unwrap_or_else(|| todo!("Unknown MCU {}", config.mcu_name))
 }
 
+pub fn get_feature(config: &Config) -> anyhow::Result<&'static str> {
+    let mcu_name = config.mcu_name.to_ascii_lowercase();
+
+    let features = match config.mcu_family {
+        MCUFamily::STM32F0 => features::F0_FEATURES,
+        _ => todo!("More features"),
+    };
+
+    for feature in features {
+        // x can be any word character
+        // "stm32f030x4" -> Regex::new(r"^stm32f030\w4")
+        let regex = Regex::new(&("^".to_string() + &feature.replace("x", r"\w"))).unwrap();
+
+        if regex.is_match(&mcu_name) {
+            return Ok(feature);
+        }
+    }
+
+    bail!("no feature for {}", mcu_name)
+}
+
 mod af_f0;
+mod features;
 mod mem_f0;

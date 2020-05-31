@@ -277,8 +277,7 @@ pub fn generate_dependencies(config: &Config) -> anyhow::Result<String> {
         _ => todo!("other hal crates"),
     };
 
-    // TODO proper feature selection
-    let feature = config.mcu_name[..9].to_ascii_lowercase();
+    let feature = get_feature(config)?;
 
     let mut filecontent =
         f!("{hal_crate} = {{version = \"*\", features = [\"{feature}\", \"rt\"]}}");
