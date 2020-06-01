@@ -1,3 +1,30 @@
+//! A tool for generating a rust project from a STM32CubeMX ioc file.
+//!
+//! The tool will run `cargo init` in the same directory as the ioc file.
+//!
+//! It will then add dependencies to `Cargo.toml` and generate a `src/main.rs`, `.cargo/config` and `memory.x`.
+//!
+//! Currently, running this tool will overwrite everything, so use with caution.
+//!
+//! # Installation
+//! ```bash
+//! $ cargo install cube2rust
+//! ```
+//! # Usage
+//! From inside a directory containing an ioc file
+//! ```bash
+//! $ cube2rust
+//! ```
+//!
+//! From anywhere
+//! ```bash
+//! $ cube2rust path/to/project_directory
+//! ```
+//!
+//! # Currently supported
+//! * Only STM32F0
+//! * GPIO, RCC, SPI, USART, I2C
+
 #![warn(rust_2018_idioms)]
 
 #[macro_use]
@@ -15,8 +42,10 @@ mod usart;
 
 use std::collections::HashMap;
 use std::fs;
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
+use std::process::Command;
 
 use anyhow::{anyhow, bail, ensure, Context};
 
@@ -26,11 +55,10 @@ use crate::rcc::RCC;
 use crate::spi::SPI;
 use crate::usart::USART;
 use crate::utils::*;
-use std::fs::OpenOptions;
-use std::process::Command;
 
 type ConfigParams<'a> = HashMap<&'a str, HashMap<&'a str, &'a str>>;
 
+/// A struct containing all the collected information from the ioc file
 #[derive(Debug)]
 pub struct Config {
     pub version: String,
@@ -44,6 +72,7 @@ pub struct Config {
     pub i2cs: Vec<I2C>,
 }
 
+/// Loads a project configuration from the ioc file content
 pub fn load_ioc(file_content: &str) -> anyhow::Result<Config> {
     let config_params = parse_ioc(file_content);
 
@@ -89,6 +118,7 @@ pub fn load_ioc(file_content: &str) -> anyhow::Result<Config> {
     })
 }
 
+/// Parses the ioc file content into nested HashMaps
 pub fn parse_ioc(file_content: &str) -> ConfigParams<'_> {
     let mut config_params = HashMap::new();
 
@@ -125,6 +155,7 @@ fn cargo_init(project_dir: &Path) -> anyhow::Result<bool> {
     Ok(output.contains("Created binary (application) package"))
 }
 
+/// Generates a rust project from the given configuration
 pub fn generate(project_dir: &Path, config: Config) -> anyhow::Result<()> {
     ensure!(
         config.version == "6",
@@ -172,11 +203,3 @@ pub fn generate(project_dir: &Path, config: Config) -> anyhow::Result<()> {
 
     Ok(())
 }
-
-parameter!(
-    MCUFamily,
-    [
-        STM32F0, STM32F1, STM32F2, STM32F3, STM32F4, STM32F7, STM32G0, STM32G4, STM32H7, STM32L0,
-        STM32L1, STM32L4, STM32L5, STM32MP1, STM32WB, STM32WL
-    ]
-);

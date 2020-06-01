@@ -11,7 +11,7 @@ Currently, running this tool will overwrite everything, so use with caution.
 
 ## Installation
 ```bash
-$ cargo install --git https://github.com/dimpolo/cube2rust.git
+$ cargo install cube2rust
 ```
 ## Usage
 From inside a directory containing an ioc file

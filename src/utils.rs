@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::convert::TryFrom;
 
-use anyhow::anyhow;
+use anyhow::{anyhow, bail};
 
 pub fn parse_optional_param<'a, T>(
     parameters: &'a HashMap<&str, &str>,
@@ -87,6 +87,14 @@ macro_rules! parameter {
         }
     };
 }
+
+parameter!(
+    MCUFamily,
+    [
+        STM32F0, STM32F1, STM32F2, STM32F3, STM32F4, STM32F7, STM32G0, STM32G4, STM32H7, STM32L0,
+        STM32L1, STM32L4, STM32L5, STM32MP1, STM32WB, STM32WL
+    ]
+);
 
 pub struct GeneratedString {
     pub string: String,
