@@ -1,8 +1,25 @@
 [package]
 name = "cube2rust"
-version = "0.0.0"
-authors = ["Dimi"]
+description = "A tool for generating a rust project from a STM32CubeMX ioc file"
+version = "0.0.1"
 edition = "2018"
+authors = ["Dimitri Polonski"]
+repository = "https://github.com/dimpolo/cube2rust/"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+categories = [
+    "command-line-utilities",
+    "embedded",
+    "hardware-support",
+    "config"
+]
+keywords = [
+    "embedded",
+    "generator",
+    "cube",
+    "stm32",
+    "hal",
+]
 
 
 [dependencies]
